@@ -1,0 +1,24 @@
+{
+    "id": "20866143",
+    "path": "~/Rpackage/qpARI/R/lambdaOptQuantile.R",
+    "project_path": "R/lambdaOptQuantile.R",
+    "type": "r_source",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1635334238361.0,
+    "source_on_save": false,
+    "relative_order": 3,
+    "properties": {
+        "cursorPosition": "16,38",
+        "scrollLine": "0"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1603356143,
+    "encoding": "ISO8859-1",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1603356143,
+    "read_only": false,
+    "read_only_alternatives": []
+}

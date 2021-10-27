@@ -1,0 +1,26 @@
+#Comparison pARI and qpARI
+
+library(pARI)
+
+X <- simulateData(pi0 = 0.8, m = 10000, n = 20, 
+                  rho = 0, seed = 123,power = 0.8,alpha = 0.05)
+
+#Compute sign test pARI
+obj <- object.size(out <- signTest(X = X, rand = T,seed = 123)) #160001024 bytes
+plot(density(out$Test_H0))
+dim(out$Test_H0)
+
+#Compute sign test qpARI
+obj1 <- object.size(out1 <- signTestQuantile(X = X, seed = 123)) #8225016  bytes
+plot(density(out1$Test_H0))
+dim(out1$Test_H0)
+
+#Compute lambda
+system.time(lambda <- lambdaOpt(pvalues = cbind(out$pv, out$pv_H0),family = "simes",alpha = 0.05,
+                     delta = 0,step.down = F, max.step = 10, m = 10000)) #0.61
+
+
+system.time(lambda1 <- lambdaOptQuantile(pvalues = out1$pv, 
+                                         family = "simes",alpha = 0.05)) #0
+
+#Compute a(S) lower bound

@@ -1,0 +1,48 @@
+#' @title Permutatation-based one-sample t-tests
+#' @description Performs sign-flipped one-sample t-tests.
+#' @usage signTestQuantile(X, B = 1000, alternative = "two.sided", seed = NULL, mask = NULL, rand = F)
+#' @param X data matrix where rows represent the \eqn{m} variables and columns the \eqn{n} observations.
+#' @param B numeric value. Number of permutations, default to 1000. 
+#' @param alternative character string. It refers to the alternative hypothesis, must be one of \code{"two.sided"} (default), \code{"greater"} or \code{"lower"}.
+#' @param seed integer value. If you want to specify the seed. Default to @NULL
+#' @author Angela Andreella
+#' @return Returns a list with the following objects: 
+#' - \code{Test}: vector with length equals \eqn{m}. Observed one-sample t-tests, one for each \eqn{m} variable, 
+#' - \code{Test_H0}: matrix with dimensions \eqn{m \times B-1}. Test statistics under H0,
+#' - \code{pv}: vector with length equals \eqn{m}. observed p-values, one for each \eqn{m} variable,
+#' - \code{pv_H0} matrix with dimensions \eqn{m \times B-1}. P-values under H0.
+#' @export
+#' @useDynLib qpARI
+
+signTestQuantile <- function(X, B = 1000, alternative = "two.sided", seed = NULL){
+  
+  alternative_set <- c("two.sided", "greater", "lower")
+  
+  if(!is.null(seed)){set.seed(seed)}else{set.seed(1234)}
+
+  alternative <- match.arg(tolower(alternative), alternative_set)
+  
+  ## number of obeservation
+  n <- ncol(X)
+  # number of variables
+  m <- nrow(X)
+  
+  ## Observed test statistics
+  rowV <- rowVariance(X)
+  t_obs <- ifelse(rowV==0,0, rowMeans(X)/(sqrt((rowV)/n)))
+  
+  ## Test statistics under H0
+  
+  Test_H0 <- signFlipQuantile(X,B)
+  
+  Test_H0 <- ifelse(is.na(Test_H0), 0 , Test_H0)
+  
+  Test <- stats::quantile(Test, probs = seq(from=1/(B),to=1,by = 1/(B)))
+  QT <- cbind(Test, Test_H0)
+  pv <-pvQuantile(QT = QT, Test = t_obs, B = B)
+  pv_H0 <-sapply(c(1:m), function(x) sum(abs(t_obs[x]) <= abs(QT)))/(B*B)
+  
+  out <- list(Test = Test, Test_H0 = Test_H0, pv = pv, pv_H0 = pv_H0)
+  
+  return(out)
+}

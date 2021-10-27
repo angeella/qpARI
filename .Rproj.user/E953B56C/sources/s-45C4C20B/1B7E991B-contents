@@ -1,0 +1,14 @@
+library(pecora)
+library(qpARI)
+library(pARI)
+X <- matrix(rnorm(20*100), nrow = 20)
+
+out <- pecora::oneSample(X = X, B = 1000, seed = 1234, permReturn = TRUE)
+pv <- t2p(Test = out, rankBased = TRUE, alternative = "two.sided")
+
+out1 <- signTestQuantile(X = t(X), B = 1000, alternative = "two.sided", seed = 1234)
+
+plot(round(out1$pv,3), pv[,1])
+
+lambdaOpt(pvalues = pv, family = "simes", alpha = 0.05, delta = 0)
+lambdaOptQuantile(B = 1000, pvalues = out1$pv, family = "simes", alpha = 0.05)
